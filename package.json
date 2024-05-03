@@ -1,0 +1,17 @@
+{
+  "name": "decay",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "bun run ./tests/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1"
+  }
+}
