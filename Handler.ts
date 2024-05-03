@@ -33,7 +33,7 @@ export default class Handler {
             }
 
             const start = decayStart > 0 ? `<t:${decayStart}:R> foi removido um ponto de decay.` : '';
-            return this._handler.message.reply(`**${nickname}**, vai começar toma decay em **${15 - daysRemaining} dia(s)**. Conta atualmente possui **${daysRemaining} dia(s) stackado**. \nÚltimo partida de **${nickname}** foi <t:${lastGame}:R> \n${start} `);
+            return this._handler.message.reply(`**${nickname}**, vai começar toma decay em **${daysRemaining} dia(s)**. Conta atualmente possui **${daysRemaining} dia(s) stackado**. \nÚltimo partida de **${nickname}** foi <t:${lastGame}:R> \n${start} `);
 
         } catch (e: any) {
             return this._handler.message.reply(e.message);
