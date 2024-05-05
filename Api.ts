@@ -44,7 +44,7 @@ export default class Api {
             nickname: rst.battleUserStat.nickname,
             daysRemaining: rst.deferPoint,
             lastGame: rst.updateDtm / 1000,
-            decayStart: (rst.dormantDtm / 1000) ?? 0
+            decayStart: rst?.dormantDtm ? rst.dormantDtm / 1000 : 0
         };
 
         return userInfo;
