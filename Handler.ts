@@ -22,9 +22,9 @@ export default class Handler {
             const userNickname = this._handler.content;
             if (!userNickname) return this._handler.message.reply('* Use o comando dessa maneira: **!decay <nickname>**');
 
-            const { nickname, daysRemaining, lastGame, decayStart }: iUserInfo = await new Api(userNickname).ranked();
+            const { nickname, daysRemaining, lastGame, decayStart }: iUserInfo = await new Api(userNickname).decay();
 
-            if (daysRemaining == 0) {
+            if (!daysRemaining) {
                 return this._handler.message.reply(`**${nickname}** está tomando decay. \nÚltimo game foi <t:${lastGame}:R>`);
             }
 
@@ -32,8 +32,8 @@ export default class Handler {
                 return this._handler.message.reply(`**${nickname}**, tem os **15 dias** stackado.`);
             }
 
-            const start = decayStart > 0 ? `<t:${decayStart}:R> foi removido um ponto de decay.` : '';
-            return this._handler.message.reply(`**${nickname}**, vai começar toma decay em **${daysRemaining} dia(s)**. Conta atualmente possui **${daysRemaining} dia(s) stackado**. \nÚltimo partida de **${nickname}** foi <t:${lastGame}:R> \n${start} `);
+            const start = decayStart ? `<t:${decayStart}:R> foi removido um ponto de decay.` : '';
+            return this._handler.message.reply(`**${nickname}**, vai começar tomar decay em **${daysRemaining} dia(s)**. Conta atualmente possui **${daysRemaining} dia(s) stackado**. \nÚltimo partida de **${nickname}** foi ${lastGame ? `<t:${lastGame}:R>` : '**???**'} \n${start} `);
 
         } catch (e: any) {
             return this._handler.message.reply(e.message);
