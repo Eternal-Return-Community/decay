@@ -1,5 +1,8 @@
 import Webhook from "./Webhook";
-import type userInfo from "./interface/iUserInfo";
+import type Season from "./interface/iSeason";
+import type UserInfo from "./interface/iUserInfo";
+import date from './date';
+import Cache from "./Cache";
 
 export default class Api {
 
@@ -17,6 +20,26 @@ export default class Api {
     }
 
     constructor(private _nickname: string) { };
+
+    private async season(): Promise<number> {
+        const response = await fetch('https://open-api.bser.io/v2/data/Season', {
+            headers: {
+                'x-api-key': Bun.env.TOKEN!
+            }
+        });
+
+        const { data } = await response.json();
+        const season = data.find((i: Season) => i.isCurrent);
+
+        const seasonEnd = date(season.seasonEnd);
+
+        if (season.seasonName.startsWith('Pre-Season')) {
+            throw new Error(`O jogo está na **Pre-season**. Durante a **Pre-season** os jogadores não irá dropar por inatividade. \nSeason vai começar **<t:${seasonEnd}:R>**`)
+        }
+
+        Cache.setDate = seasonEnd;
+        return seasonEnd;
+    }
 
     private async userNum(): Promise<number> {
         const response = await fetch(`https://open-api.bser.io/v1/user/nickname?query=${this._nickname.toLocaleLowerCase().trim()}`, {
@@ -44,7 +67,8 @@ export default class Api {
         return Math.round(lastGame?.startDtm / 1000) || 0;
     }
 
-    public async decay(): Promise<userInfo> {
+    public async decay(): Promise<UserInfo> {
+        const seasonEnd = date() > Cache.getDate ? await this.season() : Cache.getDate;
         const userNum = await this.userNum();
         const lastGame = await this.games(userNum);
 
@@ -55,11 +79,12 @@ export default class Api {
 
         if ((rst?.mmr ?? 0) < 4800) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
 
-        const userInfo: userInfo = {
+        const userInfo: UserInfo = {
             nickname: rst.battleUserStat.nickname,
             daysRemaining: rst.deferPoint,
             lastGame,
-            decayStart: (rst.dormantDtm / 1000) || 0
+            decayStart: (rst.dormantDtm / 1000) || 0,
+            seasonEnd
         };
 
         return userInfo;
