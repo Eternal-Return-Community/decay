@@ -1,15 +1,3 @@
-# 1
-
-To install dependencies:
-
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.1.4. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+# Eternal Return Decay
+<img src='./assets/1.png'>
+<img src='./assets/2.png'>
