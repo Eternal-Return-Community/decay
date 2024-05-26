@@ -6,8 +6,7 @@ import Cache from "./Cache";
 
 export default class Api {
 
-    private readonly _seasonID: number = 23;
-    private readonly _patch: string = '1.20.0';
+    private readonly _patch: string = Bun.env.PATCH_VERSION!;
     private readonly _headers = {
         headers: {
             'User-Agent': 'BestHTTP/2 v2.4.0',
@@ -32,6 +31,7 @@ export default class Api {
         const season = data.find((i: Season) => i.isCurrent);
 
         const seasonEnd = date(season.seasonEnd);
+        Cache.setSeason = season.seasonID;
 
         if (season.seasonName.startsWith('Pre-Season')) {
             throw new Error(`O jogo está na **Pre-season**. Durante a **Pre-season** os jogadores não irá dropar por inatividade. \nSeason vai começar **<t:${seasonEnd}:R>**`)
@@ -49,7 +49,7 @@ export default class Api {
         });
 
         const data = await response.json();
-        if (data.code !== 200) throw new Error('Esse jogador não existe.');
+        if (data.code !== 200) throw new Error('Esse jogador não existe ou o servidor está em manutenção. \nQuando o servidor estiver offline os serviços da **NN** ficam indsponível');
 
         return data.user.userNum;
     }
@@ -72,7 +72,7 @@ export default class Api {
         const userNum = await this.userNum();
         const lastGame = await this.games(userNum);
 
-        const response = await fetch(`https://bser-rest-release.bser.io/api/battle/overview/other/${userNum}/${this._seasonID}`, this._headers);
+        const response = await fetch(`https://bser-rest-release.bser.io/api/battle/overview/other/${userNum}/${Cache.getSeason}`, this._headers);
         const data = await response.json();
 
         const rst = data.rst.battleUserInfo[3];

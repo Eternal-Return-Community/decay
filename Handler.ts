@@ -23,10 +23,11 @@ export default class Handler {
             const userNickname = this._handler.content;
             if (!userNickname) return this._message.reply('* Use o comando dessa maneira: **!decay <nickname>**');
 
-            const { nickname, daysRemaining, lastGame, decayStart, seasonEnd }: iUserInfo = await new Api(userNickname).decay();
+            const bser = new Api(userNickname);
+            const { nickname, daysRemaining, lastGame, decayStart, seasonEnd }: iUserInfo = await bser.decay();
 
             if (!daysRemaining) {
-                return this._message.reply(`**${nickname}** está tomando decay. \nÚltimo game foi <t:${lastGame}:R>`);
+                return this._message.reply(`**${nickname}** está tomando decay. \nÚltimo game foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**`);
             }
 
             if (daysRemaining == 15) {
@@ -35,7 +36,6 @@ export default class Handler {
 
             const start = decayStart ? `**<t:${decayStart}:R>** foi removido um ponto de decay.` : '';
             return this._message.reply(`\`${nickname}\`, vai começar tomar decay em \`${daysRemaining} dia(s)\`. \`Season vai acabar\` **<t:${seasonEnd}:R>** \nÚltimo partida de \`${nickname}\` foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**. ${start}`);
-
         } catch (e: any) {
             return this._message.reply(e.message);
         }
