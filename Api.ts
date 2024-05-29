@@ -77,7 +77,7 @@ export default class Api {
 
         const rst = data.rst.battleUserInfo[3];
 
-        if ((rst?.mmr ?? 0) < 4800) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
+        if ((rst?.mmr ?? 0) < 5200) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
 
         const userInfo: UserInfo = {
             nickname: rst.battleUserStat.nickname,
