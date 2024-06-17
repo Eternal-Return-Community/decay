@@ -26,14 +26,12 @@ class Bot extends Client {
             const commandName = arg[0].toLocaleLowerCase().trim();
             const content = arg[1];
 
-            const handler: iHandler = {
+            new Handler({
                 message,
                 arg,
                 commandName,
                 content
-            }
-
-            new Handler(handler);
+            });
         })
     }
 }
