@@ -28,7 +28,10 @@ type RegionCount = {
 }
 
 const reward = (region: RegionCount): string => {
-    const regions = Object.entries(region).sort((a, b) => b[1] - a[1]);
+    const regions = Object
+        .entries(region)
+        .sort((a, b) => b[1] - a[1]);
+
     const [regionName] = regions[0];
     return regionName.replace(/(play|Count)/g, '');
 }

@@ -1,3 +1,4 @@
 # Eternal Return Decay
-<img src='./assets/1.png'>
-<img src='./assets/2.png'>
+<img src='https://i.imgur.com/uusnzzE.png'>
+<img src='https://i.imgur.com/K379SPk.png'>
+<img src='https://i.imgur.com/xUrYRAS.png'>
