@@ -79,8 +79,6 @@ export default class Api {
 
         const rst = data.rst.battleUserInfo[this._matchingMode];
 
-        console.log(rst)
-
         if ((rst?.mmr ?? Elo.IRON) < Elo.DIAMOND) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
 
         return {
