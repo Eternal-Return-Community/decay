@@ -2,6 +2,7 @@ import type { Message } from "discord.js";
 import type iHandler from "./interface/iHandler";
 import type iUserInfo from "./interface/iUserInfo";
 import Api from "./Api";
+import { MatchingTeamMode } from "./enum/MatchingTeamMode";
 
 export default class Handler {
 
@@ -14,7 +15,7 @@ export default class Handler {
     };
 
     private async command(): Promise<void> {
-        if (this._handler.commandName !== '!decay') return;
+        if (this._handler.commandName !== `${this._prefix}decay`) return;
         await this.decay();
     }
 
@@ -23,10 +24,10 @@ export default class Handler {
             const userNickname = this._handler.content;
             if (!userNickname) return this._message.reply('* Use o comando dessa maneira: **!decay <nickname>**');
 
-            const bser = new Api(userNickname);
-            const { nickname, daysRemaining, lastGame, decayStart, seasonEnd }: iUserInfo = await bser.decay();
+            const bser = new Api(userNickname, MatchingTeamMode.SQUAD);
+            const { nickname, daysRemaining, lastGame, decayStart, seasonEnd, region }: iUserInfo = await bser.decay();
 
-            if (!daysRemaining) {
+            if (daysRemaining == 0) {
                 return this._message.reply(`**${nickname}** está tomando decay. \nÚltimo game foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**`);
             }
 
@@ -34,8 +35,7 @@ export default class Handler {
                 return this._message.reply(`**${nickname}**, tem os **15 dias** stackado.`);
             }
 
-            const start = decayStart ? `**<t:${decayStart}:R>** foi removido um ponto de decay.` : '';
-            return this._message.reply(`\`${nickname}\`, vai começar tomar decay em \`${daysRemaining} dia(s)\`. \`Season vai acabar\` **<t:${seasonEnd}:R>** \nÚltimo partida de \`${nickname}\` foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**. ${start}`);
+            return this._message.reply(`\`${nickname}\`, vai começar tomar decay em \`${daysRemaining} dia(s)\`. \`Season vai acabar\` **<t:${seasonEnd}:R>** \nÚltimo partida de \`${nickname}\` foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**. **<t:${decayStart}:R>** foi removido um ponto de decay. \nRegião atual da conta: \`${region}\``);
         } catch (e: any) {
             return this._message.reply(e.message);
         }

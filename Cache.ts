@@ -1,7 +1,7 @@
 export default class Cache {
 
     private static date: number = 0;
-    private static season: number = 23;
+    private static season: number = 25;
 
     public static set setDate(date: number) {
         this.date = date;

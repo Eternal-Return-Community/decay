@@ -1,5 +1,4 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import type iHandler from './interface/iHandler';
 import Handler from './Handler';
 
 class Bot extends Client {

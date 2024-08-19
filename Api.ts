@@ -1,39 +1,40 @@
 import Webhook from "./Webhook";
-import type Season from "./interface/iSeason";
-import type UserInfo from "./interface/iUserInfo";
+import type iSeason from "./interface/iSeason";
+import type iUserInfo from "./interface/iUserInfo";
 import date from './date';
 import Cache from "./Cache";
+import { Elo } from "./enum/Elo";
+import type { MatchingTeamMode } from "./enum/MatchingTeamMode";
+import region from "./regions";
 
 export default class Api {
 
-    private readonly _patch: string = Bun.env.PATCH_VERSION!;
     private readonly _headers = {
         headers: {
             'User-Agent': 'BestHTTP/2 v2.4.0',
             'Content-Type': 'application/json',
             'Host': 'bser-rest-release.bser.io',
             'X-BSER-AuthProvider': 'STEAM',
-            'X-BSER-SessionKey': Bun.env.SESSION!,
-            'X-BSER-Version': this._patch
+            'X-BSER-SessionKey': Bun.env.SESSION || '',
+            'X-BSER-Version':  Bun.env.PATCH_VERSION || ''
         }
     }
 
-    constructor(private _nickname: string) { };
+    constructor(
+        private readonly _nickname: string,
+        private readonly _matchingMode: MatchingTeamMode
+    ) { };
 
     private async season(): Promise<number> {
-        const response = await fetch('https://open-api.bser.io/v2/data/Season', {
-            headers: {
-                'x-api-key': Bun.env.TOKEN!
-            }
-        });
+        const response = await fetch('https://bser-rest-release.bser.io/api/ranking/currentSeasonTiers', this._headers);
 
-        const { data } = await response.json();
-        const season = data.find((i: Season) => i.isCurrent);
+        const data = await response.json();
+        const season: iSeason = data.rst.rankingSeason;
 
-        const seasonEnd = date(season.seasonEnd);
-        Cache.setSeason = season.seasonID;
+        const seasonEnd = date(season.endDtm);
+        Cache.setSeason = season.id;
 
-        if (season.seasonName.startsWith('Pre-Season')) {
+        if (season.title.startsWith('Pre-Season')) {
             throw new Error(`O jogo está na **Pre-season**. Durante a **Pre-season** os jogadores não irá dropar por inatividade. \nSeason vai começar **<t:${seasonEnd}:R>**`)
         }
 
@@ -63,31 +64,33 @@ export default class Api {
             throw new Error('Ocorreu um erro interno.');
         }
 
-        const lastGame = data.rst.battleUserGames.find((i: any) => i.matchingMode === 3);
+        const lastGame = data.rst.battleUserGames.find((i: any) => i.matchingMode === this._matchingMode);
         return Math.round(lastGame?.startDtm / 1000) || 0;
     }
 
-    public async decay(): Promise<UserInfo> {
+    public async decay(): Promise<iUserInfo> {
         const seasonEnd = date() > Cache.getDate ? await this.season() : Cache.getDate;
+
         const userNum = await this.userNum();
         const lastGame = await this.games(userNum);
 
         const response = await fetch(`https://bser-rest-release.bser.io/api/battle/overview/other/${userNum}/${Cache.getSeason}`, this._headers);
         const data = await response.json();
 
-        const rst = data.rst.battleUserInfo[3];
+        const rst = data.rst.battleUserInfo[this._matchingMode];
 
-        if ((rst?.mmr ?? 0) < 5200) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
+        console.log(rst)
 
-        const userInfo: UserInfo = {
-            nickname: rst.battleUserStat?.nickname ?? this._nickname,
+        if ((rst?.mmr ?? Elo.IRON) < Elo.DIAMOND) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
+
+        return {
+            nickname: rst.battleUserStat?.nickname || this._nickname,
             daysRemaining: rst.deferPoint,
             lastGame,
             decayStart: (rst.dormantDtm / 1000) || 0,
-            seasonEnd
+            seasonEnd,
+            region: region(rst.rankBindRegion)
         };
-
-        return userInfo;
     }
 
 }

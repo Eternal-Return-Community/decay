@@ -1,7 +1,8 @@
-export default interface UserInfo {
-    nickname: string,
-    daysRemaining: number,
-    lastGame: number,
-    decayStart: number,
-    seasonEnd: string | number
+export default interface iUserInfo {
+    nickname: string;
+    daysRemaining: number;
+    lastGame: number;
+    decayStart: number;
+    seasonEnd: string | number;
+    region: string
 };
