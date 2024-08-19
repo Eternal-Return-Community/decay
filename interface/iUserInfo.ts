@@ -4,5 +4,6 @@ export default interface iUserInfo {
     lastGame: number;
     decayStart: number;
     seasonEnd: string | number;
-    region: string
+    region: string;
+    regionReward: string
 };

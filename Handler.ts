@@ -25,7 +25,7 @@ export default class Handler {
             if (!userNickname) return this._message.reply('* Use o comando dessa maneira: **!decay <nickname>**');
 
             const bser = new Api(userNickname, MatchingTeamMode.SQUAD);
-            const { nickname, daysRemaining, lastGame, decayStart, seasonEnd, region }: iUserInfo = await bser.decay();
+            const { nickname, daysRemaining, lastGame, decayStart, seasonEnd, regionReward }: iUserInfo = await bser.decay();
 
             if (daysRemaining == 0) {
                 return this._message.reply(`**${nickname}** está tomando decay. \nÚltimo game foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**`);
@@ -35,7 +35,7 @@ export default class Handler {
                 return this._message.reply(`**${nickname}**, tem os **15 dias** stackado.`);
             }
 
-            return this._message.reply(`\`${nickname}\`, vai começar tomar decay em \`${daysRemaining} dia(s)\`. \`Season vai acabar\` **<t:${seasonEnd}:R>** \nÚltimo partida de \`${nickname}\` foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**. **<t:${decayStart}:R>** foi removido um ponto de decay. \nRegião atual da conta: \`${region}\``);
+            return this._message.reply(`\`${nickname}\`, vai começar tomar decay em \`${daysRemaining} dia(s)\`. \`Season vai acabar\` **<t:${seasonEnd}:R>** \nÚltimo partida de \`${nickname}\` foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**. **<t:${decayStart}:R>** foi removido um ponto de decay. \nRegião atual da conta: \`${regionReward}\``);
         } catch (e: any) {
             return this._message.reply(e.message);
         }

@@ -19,4 +19,21 @@ const regions: Record<number, string> = {
     1003: 'SaoPaulo'
 }
 
-export default (x: number): string => regions[x] || 'Região desconhecida.';
+type RegionCount = {
+    playSeoulCount: number;
+    playFrankFurtCount: number;
+    playOhioCount: number;
+    playSaoPauloCount: number;
+    playAsia2Count: number;
+}
+
+const reward = (region: RegionCount): string => {
+    const regions = Object.entries(region).sort((a, b) => b[1] - a[1]);
+    const [regionName] = regions[0];
+    return regionName.replace(/(play|Count)/g, '');
+}
+
+export default {
+    account: (x: number): string => regions[x] || 'Região desconhecida.',
+    reward
+}

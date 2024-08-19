@@ -16,13 +16,13 @@ export default class Api {
             'Host': 'bser-rest-release.bser.io',
             'X-BSER-AuthProvider': 'STEAM',
             'X-BSER-SessionKey': Bun.env.SESSION || '',
-            'X-BSER-Version':  Bun.env.PATCH_VERSION || ''
+            'X-BSER-Version': Bun.env.PATCH_VERSION || ''
         }
     }
 
     constructor(
         private readonly _nickname: string,
-        private readonly _matchingMode: MatchingTeamMode
+        private readonly _matchingTeamMode: MatchingTeamMode
     ) { };
 
     private async season(): Promise<number> {
@@ -64,7 +64,7 @@ export default class Api {
             throw new Error('Ocorreu um erro interno.');
         }
 
-        const lastGame = data.rst.battleUserGames.find((i: any) => i.matchingMode === this._matchingMode);
+        const lastGame = data.rst.battleUserGames.find((i: any) => i.matchingMode === this._matchingTeamMode);
         return Math.round(lastGame?.startDtm / 1000) || 0;
     }
 
@@ -77,7 +77,10 @@ export default class Api {
         const response = await fetch(`https://bser-rest-release.bser.io/api/battle/overview/other/${userNum}/${Cache.getSeason}`, this._headers);
         const data = await response.json();
 
-        const rst = data.rst.battleUserInfo[this._matchingMode];
+        const rst = data.rst.battleUserInfo[this._matchingTeamMode];
+        const { playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count } = rst;
+
+        region.reward({ playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count })
 
         if ((rst?.mmr ?? Elo.IRON) < Elo.DIAMOND) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
 
@@ -87,7 +90,8 @@ export default class Api {
             lastGame,
             decayStart: (rst.dormantDtm / 1000) || 0,
             seasonEnd,
-            region: region(rst.rankBindRegion)
+            region: region.account(rst.rankBindRegion),
+            regionReward: region.reward({ playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count })
         };
     }
 
