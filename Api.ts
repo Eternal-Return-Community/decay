@@ -80,8 +80,6 @@ export default class Api {
         const rst = data.rst.battleUserInfo[this._matchingTeamMode];
         const { playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count } = rst;
 
-        region.reward({ playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count })
-
         if ((rst?.mmr ?? Elo.IRON) < Elo.DIAMOND) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
 
         return {
