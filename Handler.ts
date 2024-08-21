@@ -3,6 +3,7 @@ import type iHandler from "./interface/iHandler";
 import type iUserInfo from "./interface/iUserInfo";
 import Api from "./Api";
 import { MatchingTeamMode } from "./enum/MatchingTeamMode";
+import DecayError from "./DecayError";
 
 export default class Handler {
 
@@ -21,7 +22,6 @@ export default class Handler {
 
     private async decay(): Promise<Message> {
         try {
-            let message: string = '';
             const userNickname = this._handler.content;
             if (!userNickname) return this._message.reply('* Use o comando dessa maneira: **!decay <nickname>**');
 
@@ -35,11 +35,15 @@ export default class Handler {
             if (daysRemaining == 15) {
                 return this._message.reply(`**${nickname}**, tem os **15 dias** stackado.`);
             }
-            
-            const start = decayStart > 0 ? `**<t:${decayStart}:R>** foi removido um ponto de decay.` : '';
-            return this._message.reply(`\`${nickname}\`, vai começar tomar decay em \`${daysRemaining} dia(s)\`. \`Season vai acabar\` **<t:${seasonEnd}:R>** \nÚltimo partida de \`${nickname}\` foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**. ${start} \nRegião atual da conta: \`${regionReward}\``);
+
+            const start = decayStart > 0 ? `**<t:${decayStart}:R>** foi removido um ponto de decay.\n` : '';
+            return this._message.reply(`\`${nickname}\`, vai começar tomar decay em \`${daysRemaining} dia(s)\`. \`Season vai acabar\` **<t:${seasonEnd}:R>** \nÚltimo partida de \`${nickname}\` foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**. ${start} Região atual da conta: \`${regionReward}\``);
         } catch (e: any) {
-            return this._message.reply(e.message);
+
+            if (e instanceof DecayError) return this._message.reply(e.message);
+
+            console.log(e.message)
+            return this._message.reply('Ocorreu um erro interno (2)');
         }
     }
 }

@@ -6,6 +6,7 @@ import Cache from "./Cache";
 import { Elo } from "./enum/Elo";
 import type { MatchingTeamMode } from "./enum/MatchingTeamMode";
 import region from "./regions";
+import DecayError from "./DecayError";
 
 export default class Api {
 
@@ -35,7 +36,7 @@ export default class Api {
         Cache.setSeason = season.id;
 
         if (season.title.startsWith('Pre-Season')) {
-            throw new Error(`O jogo está na **Pre-season**. Durante a **Pre-season** os jogadores não irá dropar por inatividade. \nSeason vai começar **<t:${seasonEnd}:R>**`)
+            throw new DecayError(`O jogo está na **Pre-season**. Durante a **Pre-season** os jogadores não irá dropar por inatividade. \nSeason vai começar **<t:${seasonEnd}:R>**`)
         }
 
         Cache.setDate = seasonEnd;
@@ -50,7 +51,7 @@ export default class Api {
         });
 
         const data = await response.json();
-        if (data.code !== 200) throw new Error('Esse jogador não existe ou o servidor está em manutenção. \nQuando o servidor estiver offline os serviços da **NN** ficam indsponível');
+        if (data.code !== 200) throw new DecayError('Esse jogador não existe ou o servidor está em manutenção. \nQuando o servidor estiver offline os serviços da **NN** ficam indsponível');
 
         return data.user.userNum;
     }
@@ -61,7 +62,7 @@ export default class Api {
 
         if (data.cod !== 200) {
             Webhook()
-            throw new Error('Ocorreu um erro interno.');
+            throw new DecayError('Ocorreu um erro interno (1)');
         }
 
         const lastGame = data.rst.battleUserGames.find((i: any) => i.matchingMode === this._matchingTeamMode);
@@ -73,14 +74,15 @@ export default class Api {
 
         const userNum = await this.userNum();
         const lastGame = await this.games(userNum);
-
+        
         const response = await fetch(`https://bser-rest-release.bser.io/api/battle/overview/other/${userNum}/${Cache.getSeason}`, this._headers);
         const data = await response.json();
-
+        
         const rst = data.rst.battleUserInfo[this._matchingTeamMode];
-        const { playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count } = rst;
 
-        if ((rst?.mmr ?? Elo.IRON) < Elo.DIAMOND) throw new Error('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
+        if ((rst?.mmr ?? Elo.IRON) < Elo.DIAMOND) throw new DecayError('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
+
+        const { playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count } = rst;
 
         return {
             nickname: rst.battleUserStat?.nickname || this._nickname,
