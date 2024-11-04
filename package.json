@@ -1,17 +1,19 @@
 {
   "name": "decay",
-  "module": "index.ts",
+  "module": "./src/index.ts",
   "type": "module",
   "scripts": {
-    "test": "bun run ./tests/index.ts"
+    "test": "bun run ./tests/auth.ts"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.1"
+    "@types/bun": "^1.1.13",
+    "@types/steam-user": "^5.0.3"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "discord.js": "^14.14.1"
+    "discord.js": "^14.16.3",
+    "steam-user": "^5.2.0"
   }
 }
