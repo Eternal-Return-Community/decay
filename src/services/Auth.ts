@@ -6,13 +6,26 @@ interface iSteam {
     debug: boolean
 }
 
-export class Steam extends SteamUser {
+export default {
+    login: async (settings: iSteam = { debug: false }): Promise<void> => {
+        await new Steam(settings).login();
+    },
+    relog: async (): Promise<void> => {
+        await new Steam().refreshTicket();
+    },
+    getToken: async (): Promise<boolean> => {
+        return await new Steam().getToken();
+    },
+    getPatch: async (): Promise<void> => await ERBS.getPatch()
+}
 
-    private readonly _accountName: string = Bun.env.LOGIN!;
-    private readonly _password: string = Bun.env.PASSWORD!;
+class Steam extends SteamUser {
+
+    private readonly _accountName: string = process.env.LOGIN!;
+    private readonly _password: string = process.env.PASSWORD!;
     private readonly _debug: boolean;
 
-    constructor({ debug = false }: Partial<iSteam>) {
+    constructor({ debug }: iSteam = { debug: false }) {
         super({ autoRelogin: true })
 
         this._debug = debug
@@ -22,25 +35,35 @@ export class Steam extends SteamUser {
         }
 
         if (this._debug) this.on('debug', (e) => console.log('[DEBUG - Steam] ->', e))
-
-        this.login()
     }
 
-    private login(): void {
-        this.logOn({ accountName: this._accountName, password: this._password })
-        this.getToken()
+    public async login(): Promise<void> {
+        this.logOn({ accountName: this._accountName, password: this._password, autoRelogin: true })
+        await this.getToken()
     }
 
-    private getToken(): void {
-        this.on('loggedOn', async () => {
-            const { sessionTicket } = await this.createAuthSessionTicket(1049590);
-            if (!sessionTicket) throw new Error('You need to log into the game at least once on your Steam/ERBS account.');
+    public async refreshTicket(): Promise<any> { 
+        console.log(await this.cancelAuthSessionTickets(1049590))
+    }
 
-            this.getSessionTicket(sessionTicket)
-
-            const erbs = new ERBS();
-            await erbs.auth(this.getSessionTicket(sessionTicket))
+    public async getToken(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.on('loggedOn', async () => {
+                try {
+                    await this.generateSessionTicket() ? resolve(true) : reject(false);
+                } catch (e) {
+                    console.log(e)
+                    reject(false)
+                }
+            })
         })
+    }
+
+    private async generateSessionTicket(): Promise<boolean> {
+        const { sessionTicket } = await this.createAuthSessionTicket(1049590);
+        if (!sessionTicket) return false;
+        await ERBS.auth(this.getSessionTicket(sessionTicket))
+        return true;
     }
 
     private getSessionTicket(sessionTicket: Buffer) {
@@ -48,8 +71,8 @@ export class Steam extends SteamUser {
     }
 }
 
-export class ERBS {
-    public async auth(authorizationCode: string): Promise<void> {
+class ERBS {
+    public static async auth(authorizationCode: string): Promise<void> {
         const response = await Api.client('POST', '/users/authenticate', JSON.stringify({
             "dlc": "pt",
             "glc": "ko",
@@ -61,17 +84,12 @@ export class ERBS {
             "ver": Cache.patch
         }))
 
-        if (response === 'INVALID_VERSION') {
-            await ERBS.getPatch();
-            await this.auth(authorizationCode)
-        }
-
-        Cache.token = response.sessionKey;
+        Cache.token = response.sessionKey
         this.renewalSession();
     }
 
-    private renewalSession = (): void => {
-        setInterval(() => Api.client('POST', '/external/renewalSessio'), 1 * 30000)
+    private static renewalSession = (): void => {
+        setInterval(() => Api.client('POST', '/external/renewalSession'), 1 * 30000)
     }
 
     public static async getPatch(): Promise<void> {

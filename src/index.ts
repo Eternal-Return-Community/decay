@@ -1,18 +1,19 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import MessageCreate from './MessageCreate';
-import { ERBS } from './services/Auth';
+import Auth from './services/Auth';
 
 class Bot extends Client {
 
     constructor() {
         super({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
         this.ready().message();
-        this.login(Bun.env.BOT_TOKEN);
+        this.login(process.env.BOT_TOKEN);
     }
 
     private ready(): this {
         return this.once('ready', async () => {
-            await ERBS.getPatch();
+            await Auth.getPatch();
+            await Auth.login();
             console.log('Bot online');
         });
     }

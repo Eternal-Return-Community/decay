@@ -1,6 +1,5 @@
 import type { Message } from "discord.js";
 import fs from 'node:fs';
-import Cache from "./Cache";
 
 export interface iCommand {
     default: Default
@@ -38,13 +37,13 @@ export default class MessageCreate {
     }
 
     private async run(): Promise<any> {
-        for (const dir of this.dirs(`${__dirname}/commands`)) {
-            const commands = this.dirs(`${__dirname}/commands/${dir}`);
+        for (const dir of this.dirs(`./src/commands`)) {
+            const commands = this.dirs(`./src/commands/${dir}`);
             for (const cmd of commands) {
 
                 if (!cmd.endsWith('.ts')) continue;
 
-                const { default: command }: iCommand = await import(`${__dirname}/commands/${dir}/${cmd}`);
+                const { default: command }: iCommand = await import(`./commands/${dir}/${cmd}`);
 
                 if (!command) continue;
                 if (!this.validateCommand(command)) continue;

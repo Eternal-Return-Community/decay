@@ -1,3 +1,3 @@
 # Eternal Return Decay
-<img src='./assets/1.png'>
-<img src='./assets/2.png'>
+- decay - `Retorna as informações sobre inatividade da sua conta.`
+- nickname - `Verificar se determinado nickname está disponível ou não.`

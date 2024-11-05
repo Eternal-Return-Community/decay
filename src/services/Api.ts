@@ -6,6 +6,7 @@ import { Elo } from "../enum/Elo";
 import { MatchingTeamMode } from "../enum/MatchingTeamMode";
 import region from "../util/regions";
 import DecayError from "../exceptions/DecayError";
+import Auth from "./Auth";
 
 export default class Api {
 
@@ -22,14 +23,24 @@ export default class Api {
                 'Content-Type': 'application/json',
                 'Host': 'bser-rest-release.bser.io',
                 'X-BSER-AuthProvider': 'STEAM',
-                'X-BSER-SessionKey': Bun.env.SESSION || '',
+                'X-BSER-SessionKey': Cache.token,
                 'X-BSER-Version': Cache.patch
             },
             body
         })
 
-        const data = await response.json();
-        return (data.cod > 1000) ? data : data?.rst;
+        let data = await response.json();
+        
+        if (data?.cod > 1000) console.debug(data);
+        if (data?.cod == 1006) throw new DecayError('**ERBS** entrou em manutenção.');
+
+        if (data?.cod >= 1000 && data?.cod <= 1007) {
+            await Auth.getPatch();
+            await Auth.relog();
+            await this.client(method, endpoint, body)
+        }
+
+        return (data?.cod > 1000) ? data : data?.rst;
     }
 
     private async season(): Promise<number> {
@@ -89,7 +100,7 @@ export default class Api {
             JSON.stringify({ 'productId': 'ACCOUNT_Change_Nickname', 'salePurchase': false, 'newNickname': this._nickname })
         );
 
-        if (response.cod == 1111) return false;
+        if (response?.cod == 1111) return false;
         return true;
     }
 }

@@ -1,13 +1,13 @@
 {
   "name": "decay",
-  "module": "./src/index.ts",
   "type": "module",
   "scripts": {
-    "test": "bun run ./tests/auth.ts"
+    "test": "tsx --env-file=.env ./tests/auth.ts",
+    "start": "tsx --env-file=.env ./src/index.ts"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.13",
-    "@types/steam-user": "^5.0.3"
+    "@types/steam-user": "^5.0.3",
+    "tsx": "^4.19.2"
   },
   "peerDependencies": {
     "typescript": "^5.4.5"
