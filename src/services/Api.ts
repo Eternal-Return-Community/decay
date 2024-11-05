@@ -34,7 +34,6 @@ export default class Api {
         if (data?.cod == 1006) throw new DecayError('**ERBS** entrou em manutenção.');
 
         if (data?.cod > 1000 && data?.cod <= 1110) {
-            await Auth.erbs.getPatch();
             await Auth.steam.refreshTicket()
             return await this.client(method, endpoint, body)
         }

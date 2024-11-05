@@ -12,7 +12,6 @@ class Bot extends Client {
 
     private ready(): this {
         return this.once('ready', async () => {
-            await Auth.erbs.getPatch();
             await Auth.steam.login();
             console.log('Bot online');
         });

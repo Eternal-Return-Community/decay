@@ -59,6 +59,7 @@ class Steam extends SteamUser {
 
 class ERBS {
     public static async auth(authorizationCode: string): Promise<void> {
+        await ERBS.getPatch();
         const response = await Api.client('POST', '/users/authenticate', JSON.stringify({
             "dlc": "pt",
             "glc": "ko",
