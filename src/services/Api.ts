@@ -7,7 +7,6 @@ import { MatchingTeamMode } from "../enum/MatchingTeamMode";
 import region from "../util/regions";
 import DecayError from "../exceptions/DecayError";
 import Auth from "./Auth";
-import sleep from "../util/sleep";
 
 export default class Api {
 
@@ -36,7 +35,7 @@ export default class Api {
 
         if (data?.cod > 1000 && data?.cod <= 1110) {
             await Auth.erbs.getPatch();
-            await Auth.steam.refreshTicket();
+            await Auth.steam.refreshTicket()
             return await this.client(method, endpoint, body)
         }
 

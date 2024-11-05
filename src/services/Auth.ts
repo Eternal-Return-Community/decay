@@ -28,29 +28,28 @@ class Steam extends SteamUser {
         await this.getToken()
     }
 
-    public async refreshTicket(): Promise<any> {
+    public async refreshTicket(): Promise<void> {
         const ticket = await this.cancelAuthSessionTickets(this._gameID, null)
 
         if (ticket.canceledTicketCount > 0) {
-            await this.generateSessionTicket();
+            await this.generateSessionTicket()
         }
     }
 
-    public async getToken(): Promise<any> {
-        return new Promise((resolve, reject) => {
+    public async getToken(): Promise<null> {
+        return new Promise((resolve) => {
             this.on('loggedOn', async () => {
-                await this.generateSessionTicket() ? resolve(true) : reject(false);
+                await this.generateSessionTicket()
+                resolve(null)
             })
         })
     }
 
-    private async generateSessionTicket(): Promise<boolean> {
+    private async generateSessionTicket(): Promise<void> {
         const { sessionTicket } = await this.createAuthSessionTicket(this._gameID);
-        if (!sessionTicket) return false;
+        if (!sessionTicket) throw new Error('You need to log into the game at least once on your Steam/ERBS account.');
 
         await ERBS.auth(this.getSessionTicket(sessionTicket))
-        
-        return true;
     }
 
     private getSessionTicket(sessionTicket: Buffer) {
