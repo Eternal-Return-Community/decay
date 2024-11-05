@@ -13,6 +13,10 @@ export default {
             const userName = args?.shift();
             if (!userName) return channel.reply(`* Use o comando dessa maneira: **${prefix}${this.alias.join(',')}, ${prefix}${this.name} <${this.args.join(', ')}>**`);
 
+            if(userName.length < 3 || userName.length > 16) {
+                return channel.reply('Nickname precisa ter no minimo 3 digitos e no máximo 16')
+            }
+
             const bser = new Api(userName?.toLowerCase().trim());
             const isAvailable = await bser.nameChecker();
 

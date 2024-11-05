@@ -1,3 +1,3 @@
-export default () => {
-    return new Promise((resolve) => setTimeout(resolve, 1000));
+export default (seconds: number) => {
+    return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }

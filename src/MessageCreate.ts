@@ -1,5 +1,6 @@
 import type { Message } from "discord.js";
 import fs from 'node:fs';
+import Cache from "./Cache";
 
 export interface iCommand {
     default: Default
@@ -52,6 +53,7 @@ export default class MessageCreate {
                     return this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente.` })
                 }
 
+                console.log('Cache -> ', Cache)
                 return command.run(this._channel, this._args, this._prefix);
             }
         }

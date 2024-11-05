@@ -22,8 +22,8 @@ export default {
                 return channel.reply(`**${nickname}** está tomando decay. \nÚltimo game foi **${lastGame ? `<t:${lastGame}:R>` : '???'}**`);
             }
 
-            if (daysRemaining == 15) {
-                return channel.reply(`**${nickname}**, tem os **15 dias** stackados.`);
+            if (daysRemaining >= 12) {
+                return channel.reply(`**${nickname}**, tem os **${daysRemaining} dias** stackados.`);
             }
 
             const start = decayStart > 0 ? `**<t:${decayStart}:R>** foi removido um ponto de decay.\n` : '';

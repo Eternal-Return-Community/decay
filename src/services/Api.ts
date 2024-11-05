@@ -7,6 +7,7 @@ import { MatchingTeamMode } from "../enum/MatchingTeamMode";
 import region from "../util/regions";
 import DecayError from "../exceptions/DecayError";
 import Auth from "./Auth";
+import sleep from "../util/sleep";
 
 export default class Api {
 
@@ -29,25 +30,28 @@ export default class Api {
             body
         })
 
-        let data = await response.json();
-        
-        if (data?.cod > 1000) console.debug(data);
+        const data = await response.json();
+
         if (data?.cod == 1006) throw new DecayError('**ERBS** entrou em manutenção.');
 
-        if (data?.cod >= 1000 && data?.cod <= 1007) {
-            await Auth.getPatch();
-            await Auth.relog();
-            await this.client(method, endpoint, body)
+        if (data?.cod > 1000 && data?.cod <= 1110) {
+            await Auth.erbs.getPatch();
+            await Auth.steam.refreshTicket();
+            return await this.client(method, endpoint, body)
         }
 
-        return (data?.cod > 1000) ? data : data?.rst;
+        return this.data(data.cod, data)
+    }
+
+    private static data(cod: number, x: any): any {
+        return cod > 1000 ? x : x.rst
     }
 
     private async season(): Promise<number> {
         const response: iSeason = await Api.client('GET', '/ranking/currentSeasonTiers');
 
         const season = response.rankingSeason;
-        const seasonEnd = date(season.endDtm);
+        const seasonEnd = date(season?.endDtm ?? 0);
 
         Cache.season = season.id;
 
