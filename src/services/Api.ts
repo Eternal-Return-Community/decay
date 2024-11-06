@@ -63,7 +63,7 @@ export default class Api {
 
     private async userNum(): Promise<number> {
         const response = await Api.client('GET', `/users/other/simple/nickname/${this._nickname}`);
-        if (response.user.un === 0) throw new DecayError('Esse jogador não existe ou o servidor tá em manutenção. \nQuando o servidor estiver offline os serviços da **NN** ficam indsponível');
+        if (response.user.un === 0) throw new DecayError('Esse jogador não existe ou o servidor entrou em manutenção. \nQuando o servidor estiver offline os serviços da **NN** ficam indsponível');
         return response.user.un;
     }
 
@@ -82,7 +82,7 @@ export default class Api {
         const response = await Api.client('GET', `/battle/overview/other/${userNum}/${Cache.season}`);
         const rst = response.battleUserInfo[this._matchingTeamMode];
 
-        if ((rst?.mmr ?? Elo.IRON) < Elo.DIAMOND) throw new DecayError('Elo da conta é menor que **Diamante**. O sistema de inatividade não está disponível para sua conta.');
+        if ((rst?.mmr ?? Elo.IRON) < Elo.METEORITE) throw new DecayError('Elo da conta é menor que **Meteorito**. O sistema de inatividade não está disponível para sua conta.');
 
         const { playSeoulCount, playOhioCount, playFrankFurtCount, playSaoPauloCount, playAsia2Count } = rst;
 
