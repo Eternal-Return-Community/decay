@@ -1,6 +1,7 @@
 import SteamUser from 'steam-user';
 import Cache from '../Cache';
 import Api from './Api';
+import DecayError from '../exceptions/DecayError';
 
 class Steam extends SteamUser {
 
@@ -25,7 +26,16 @@ class Steam extends SteamUser {
 
     public async login(): Promise<void> {
         this.logOn({ accountName: this._accountName, password: this._password })
-        await this.getToken()
+        await this.getToken();
+    }
+
+    private async getToken(): Promise<null> {
+        return new Promise((resolve) => {
+            this.on('loggedOn', async () => {
+                await this.generateSessionTicket().catch(e => console.log(`[getToken] -> ${e?.message}`))
+                resolve(null)
+            })
+        })
     }
 
     public async refreshTicket(): Promise<void> {
@@ -34,15 +44,6 @@ class Steam extends SteamUser {
         if (ticket.canceledTicketCount > 0) {
             await this.generateSessionTicket()
         }
-    }
-
-    public async getToken(): Promise<null> {
-        return new Promise((resolve) => {
-            this.on('loggedOn', async () => {
-                await this.generateSessionTicket()
-                resolve(null)
-            })
-        })
     }
 
     private async generateSessionTicket(): Promise<void> {
@@ -71,7 +72,7 @@ class ERBS {
             "ver": Cache.patch
         }))
 
-        Cache.token = response.sessionKey
+        Cache.token = response?.sessionKey
         this.renewalSession();
     }
 

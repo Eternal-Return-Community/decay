@@ -31,7 +31,7 @@ export default class Api {
 
         const data = await response.json();
 
-        if (data?.cod == 1006) throw new DecayError('**ERBS** entrou em manutenção.');
+        if (data?.cod == 1006 || data?.msg === 'maintenance') throw new DecayError('**ERBS** entrou em manutenção.');
 
         if (data?.cod > 1000 && data?.cod <= 1110) {
             await Auth.steam.refreshTicket()
