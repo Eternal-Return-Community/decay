@@ -2,12 +2,11 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import MessageCreate from './MessageCreate';
 import Auth from './services/Auth';
 
-class Bot extends Client {
+export default class Bot extends Client {
 
     constructor() {
         super({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
         this.ready().message();
-        this.login(process.env.BOT_TOKEN);
     }
 
     private ready(): this {
@@ -17,9 +16,11 @@ class Bot extends Client {
         });
     }
 
-    private message() {
+    private message(): void {
         this.on('messageCreate', (message) => new MessageCreate(message))
     }
-}
 
-new Bot();
+    public start(): void {
+        this.login(process.env.BOT_TOKEN);
+    }
+}

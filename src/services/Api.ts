@@ -16,29 +16,34 @@ export default class Api {
     ) { };
 
     public static async client(method: string, endpoint: string, body?: string): Promise<any> {
-        const response = await fetch('https://bser-rest-release.bser.io/api'.concat(endpoint), {
-            method,
-            headers: {
-                'User-Agent': 'BestHTTP/2 v2.4.0',
-                'Content-Type': 'application/json',
-                'Host': 'bser-rest-release.bser.io',
-                'X-BSER-AuthProvider': 'STEAM',
-                'X-BSER-SessionKey': Cache.token,
-                'X-BSER-Version': Cache.patch
-            },
-            body
-        })
-
-        const data = await response.json();
-
-        if (data?.cod == 1006 || data?.msg === 'maintenance') throw new DecayError('**ERBS** entrou em manutenção.');
-
-        if (data?.cod > 1000 && data?.cod <= 1110) {
-            await Auth.steam.refreshTicket()
-            return await this.client(method, endpoint, body)
+        try {
+            const response = await fetch('https://bser-rest-release.bser.io/api'.concat(endpoint), {
+                method,
+                headers: {
+                    'User-Agent': 'BestHTTP/2 v2.4.0',
+                    'Content-Type': 'application/json',
+                    'Host': 'bser-rest-release.bser.io',
+                    'X-BSER-AuthProvider': 'STEAM',
+                    'X-BSER-SessionKey': Cache.token,
+                    'X-BSER-Version': Cache.patch
+                },
+                body
+            })
+    
+            const data = await response.json();
+    
+            if (data?.cod == 1006 || data?.msg === 'maintenance') throw new DecayError('**ERBS** entrou em manutenção.');
+    
+            if (data?.cod > 1000 && data?.cod <= 1110) {
+                await Auth.steam.refreshTicket()
+                return await this.client(method, endpoint, body)
+            }
+    
+            return this.data(data.cod, data)
+        } catch(e: any) {
+            console.log('[API - Client] -> ', e?.message ?? e)
+            throw e;
         }
-
-        return this.data(data.cod, data)
     }
 
     private static data(cod: number, x: any): any {

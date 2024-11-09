@@ -29,11 +29,11 @@ class Steam extends SteamUser {
         await this.getToken();
     }
 
-    private async getToken(): Promise<null> {
+    private async getToken(): Promise<void> {
         return new Promise((resolve) => {
             this.on('loggedOn', async () => {
                 await this.generateSessionTicket().catch(e => console.log(`[getToken] -> ${e?.message}`))
-                resolve(null)
+                resolve(undefined)
             })
         })
     }
@@ -72,12 +72,15 @@ class ERBS {
             "ver": Cache.patch
         }))
 
-        Cache.token = response?.sessionKey
+        Cache.token = response?.sessionKey;
+        
+        if(Cache.renewalSession) return;
         this.renewalSession();
     }
 
     private static renewalSession = (): void => {
         setInterval(() => Api.client('POST', '/external/renewalSession'), 1 * 30000)
+        Cache.renewalSession = true;
     }
 
     public static async getPatch(): Promise<void> {

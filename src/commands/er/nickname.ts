@@ -24,6 +24,7 @@ export default {
 
         } catch (e: unknown) {
             if (e instanceof DecayError) return channel.reply(e.message);
+            console.log('[Command - Nickname] -> ', e)
             return channel.reply('Ocorreu um erro interno (2)');
         }
     }

@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "test": "tsx --env-file=.env ./tests/auth.ts",
-    "start": "tsx --env-file=.env ./src/index.ts"
+    "start": "tsx --env-file=.env start.ts"
   },
   "devDependencies": {
     "@types/steam-user": "^5.0.3",
