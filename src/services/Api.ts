@@ -59,7 +59,7 @@ export default class Api {
         Cache.season = season.id;
 
         if (season.seasonType == 2) {
-            throw new DecayError(`O jogo está na **Pre-season**. Durante a **Pre-season** os jogadores não irá dropar por inatividade. \nSeason vai começar **<t:${seasonEnd}:R>**`)
+            throw new DecayError(`O ERBS tá em **Pre-season**. Durante a **Pre-season** \nSeason vai começar **<t:${seasonEnd}:R>**`)
         }
 
         Cache.date = seasonEnd;
@@ -68,7 +68,7 @@ export default class Api {
 
     private async userNum(): Promise<number> {
         const response = await Api.client('GET', `/users/other/simple/nickname/${this._nickname}`);
-        if (response.user.un === 0) throw new DecayError('Esse jogador não existe ou o servidor entrou em manutenção. \nQuando o servidor estiver offline os serviços da **NN** ficam indsponível');
+        if (response.user.un === 0) throw new DecayError('Esse jogador não existe.');
         return response.user.un;
     }
 

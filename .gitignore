@@ -16,6 +16,8 @@ README.md
 ./tests
 tests
 .cache
+bun.lockb
+package-lock.json
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 

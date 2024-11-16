@@ -1,7 +1,6 @@
 import SteamUser from 'steam-user';
 import Cache from '../Cache';
 import Api from './Api';
-import DecayError from '../exceptions/DecayError';
 
 class Steam extends SteamUser {
 
@@ -16,23 +15,29 @@ class Steam extends SteamUser {
             throw new Error('Missing login or password in .env')
         }
 
-        this.on('error', (err) => console.log('[SteamUser] -> ', err))
-
-        this.on('disconnected', () => {
-            if (!this.steamID) setTimeout(async () => await this.login(), 10 * 1000)
+        this.logOn({ accountName: this._accountName, password: this._password })
+        
+        this.on('error', (err) => {
+            console.log('[SteamUser - Error] -> ', err)
+            this._relog()
         })
-
+        
+        this.on('disconnected', () => {
+            console.log('[SteamUser - Disconnected]')
+            this._relog()
+        })
     }
 
     public async login(): Promise<void> {
-        this.logOn({ accountName: this._accountName, password: this._password })
         await this.getToken();
     }
 
     private async getToken(): Promise<void> {
         return new Promise((resolve) => {
             this.on('loggedOn', async () => {
-                await this.generateSessionTicket().catch(e => console.log(`[getToken] -> ${e?.message}`))
+                await this
+                    .generateSessionTicket()
+                    .catch(e => console.log(`[Steam - getToken] -> ${e?.message}`))
                 resolve(undefined)
             })
         })
@@ -53,8 +58,12 @@ class Steam extends SteamUser {
         await ERBS.auth(this.getSessionTicket(sessionTicket))
     }
 
-    private getSessionTicket(sessionTicket: Buffer) {
+    private getSessionTicket(sessionTicket: Buffer): string {
         return sessionTicket.toString('hex').toUpperCase()
+    }
+
+    private _relog(): void {
+        if (!this.steamID) setTimeout(async () => await this.login(), 10 * 1000)
     }
 }
 
@@ -72,13 +81,16 @@ class ERBS {
             "ver": Cache.patch
         }))
 
-        Cache.token = response?.sessionKey;
-        
-        if(Cache.renewalSession) return;
+        Cache.token = response?.sessionKey
         this.renewalSession();
     }
 
     private static renewalSession = (): void => {
+
+        if (Cache.renewalSession) {
+            return;
+        }
+
         setInterval(() => Api.client('POST', '/external/renewalSession'), 1 * 30000)
         Cache.renewalSession = true;
     }
