@@ -1,0 +1,14 @@
+-- CreateTable
+CREATE TABLE "Championship" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+);
+
+-- CreateTable
+CREATE TABLE "Teams" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userName" TEXT NOT NULL,
+    "userNum" INTEGER NOT NULL,
+    "mmr" INTEGER NOT NULL,
+    "teamId" INTEGER NOT NULL,
+    CONSTRAINT "Teams_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Championship" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);

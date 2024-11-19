@@ -7,6 +7,12 @@ import { MatchingTeamMode } from "../enum/MatchingTeamMode";
 import region from "../util/regions";
 import DecayError from "../exceptions/DecayError";
 import Auth from "./Auth";
+import type iLeaderBoard from "../interface/iLeaderBoard";
+
+export enum BASE_URL {
+    'BSER' = 'https://bser-rest-release.bser.io/api',
+    'DAK' = 'https://er.dakgg.io/api/v0'
+}
 
 export default class Api {
 
@@ -109,5 +115,11 @@ export default class Api {
 
         if (response?.cod == 1111) return false;
         return true;
+    }
+
+    public static async leaderboard(serverName: string = 'saopaulo', page: number = 1): Promise<Array<iLeaderBoard>> {
+        const response = await fetch(BASE_URL.DAK.concat(`/leaderboard?page=${page}&seasonKey=SEASON_14&serverName=${serverName}`));
+        const data = await response.json();
+        return data.leaderboards;
     }
 }

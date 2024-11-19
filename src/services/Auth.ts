@@ -1,6 +1,6 @@
 import SteamUser from 'steam-user';
 import Cache from '../Cache';
-import Api from './Api';
+import Api, { BASE_URL } from './Api';
 
 class Steam extends SteamUser {
 
