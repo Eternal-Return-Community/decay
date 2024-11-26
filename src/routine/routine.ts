@@ -7,11 +7,11 @@ export default {
 
         for (const player of players) {
 
-            const userNum = allPlayers.find(i => i.userNum == player.userNum)?.userNum;
+            const playerExists = allPlayers.find(i => i.userName.toLowerCase() == player.nickname.toLowerCase());
 
-            if (userNum) {
+            if (playerExists) {
                 await Championship.update({
-                    userNum,
+                    userNum: player.userNum,
                     userName: player.nickname,
                     mmr: player.mmr
                 })
