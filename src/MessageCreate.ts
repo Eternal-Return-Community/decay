@@ -1,6 +1,7 @@
 import type { Message } from "discord.js";
 import fs from 'node:fs';
 import Cache from "./Cache";
+import DecayError from "./exceptions/DecayError";
 
 export interface iCommand {
     default: Default
@@ -12,7 +13,7 @@ interface Default {
     alias: Array<string>;
     args: Array<string>;
     status: iStatus
-    run(channel: Message, args: Array<string>, prefix: string): void
+    run(channel: Message, args: Array<string>, prefix: string): Promise<void>
 }
 
 interface iStatus {
@@ -58,8 +59,15 @@ export default class MessageCreate {
                     return this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente. \nMotivo: ${command.status.reason}` })
                 }
 
-                console.log('Cache -> ', Cache)
-                return command.run(this._channel, this._args, this._prefix);
+                try {
+                    console.log('Cache -> ', Cache)
+                    await command.run(this._channel, this._args, this._prefix);
+                }  catch (e: unknown) {
+                    if (e instanceof DecayError) return this._channel.reply(e.message);
+                    console.log(`<MessagaCreate> | [Command - ${command.name}] -> `)
+                    console.log(e)
+                    return this._channel.reply('Ocorreu um erro interno.');
+                }
             }
         }
 
