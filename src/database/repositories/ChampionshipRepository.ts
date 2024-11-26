@@ -64,10 +64,10 @@ export default class Championship {
         await client.championship.deleteMany();
     }
 
-    public static async delete(userNum: number): Promise<void> {
-        await client.teams.delete({
+    public static async deleteTeam(teamId: number): Promise<void> {
+        await client.teams.deleteMany({
             where: {
-                userNum
+                teamId
             }
         });
     }

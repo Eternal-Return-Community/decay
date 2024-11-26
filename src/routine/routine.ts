@@ -17,8 +17,5 @@ export default {
                 })
             }
         }
-    },
-    start: function () {
-        setInterval(async () => await this.leaderboard(), 10 * 6 * 10000)
     }
 }

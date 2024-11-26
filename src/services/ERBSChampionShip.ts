@@ -3,30 +3,39 @@ import type iPlayer from "../database/repositories/interface/iPlayer";
 import Championship from "../database/repositories/ChampionshipRepository";
 import routine from "../routine/routine";
 
-export default class ERBSChampionShip extends AsciiTable3 {
+class ERBSChampionShip extends AsciiTable3 {
 
     constructor(public readonly title: string) {
         super(title)
     }
 
-    public async teams() {
+    public async teams(): Promise<Array<string[][]>> {
 
         const rows: Array<string[][]> = [];
 
         const teams = await Championship.all();
         const team = Object.groupBy(teams, (i) => i.teamId);
 
-        Object.keys(team).forEach((_, i) => {
-            const byMMR = this.orderByMMR(team[i + 1]!);
+        Object.keys(team).forEach((i) => {
+            const byMMR = this.orderByMMR(team[Number(i)]!);
             rows.push([
-                this.rank(i + 1),
+                [''],
                 this.allPlayers(byMMR),
                 [byMMR.map(i => i.mmr).splice(0, 3).join(' | ')],
                 this.totalMMR(byMMR)
             ])
         })
 
-        return rows.sort((a, b) => Number(b[3][0]) - Number(a[3][0]))
+        return this.matrix(rows)
+    }
+
+    private matrix(rows: Array<string[][]>): Array<string[][]> {
+        return rows
+            .sort((a, b) => Number(b[3][0]) - Number(a[3][0]))
+            .map((r, i) => {
+                r[0] = this.rank(i + 1)
+                return r
+            })
     }
 
     private rank(i: number): Array<string> {
@@ -59,3 +68,5 @@ export default class ERBSChampionShip extends AsciiTable3 {
     }
 
 }
+
+export default new ERBSChampionShip('Eternal Return')

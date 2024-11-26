@@ -117,8 +117,8 @@ export default class Api {
         return true;
     }
 
-    public static async leaderboard(serverName: string = 'saopaulo', page: number = 1): Promise<Array<iLeaderBoard>> {
-        const response = await fetch(BASE_URL.DAK.concat(`/leaderboard?page=${page}&seasonKey=SEASON_14&serverName=${serverName}`));
+    public static async leaderboard(serverName: string = 'saopaulo', key: number = 14, page: number = 1): Promise<Array<iLeaderBoard>> {
+        const response = await fetch(BASE_URL.DAK.concat(`/leaderboard?page=${page}&seasonKey=SEASON_${key}&serverName=${serverName}`));
         const data = await response.json();
         return data.leaderboards;
     }
