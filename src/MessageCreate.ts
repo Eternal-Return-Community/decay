@@ -43,7 +43,7 @@ export default class MessageCreate {
         return fs.readdirSync(dir)
     }
 
-    private async run(): Promise<any> {
+    private async run(): Promise<void> {
         for (const dir of this.dirs(`./src/commands`)) {
             const commands = this.dirs(`./src/commands/${dir}`);
             for (const cmd of commands) {
@@ -56,17 +56,23 @@ export default class MessageCreate {
                 if (!this.validateCommand(command)) continue;
 
                 if (!command?.status?.enable) {
-                    return this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente. \nMotivo: ${command.status.reason}` })
+                    this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente. \nMotivo: ${command.status.reason}` })
+                    return 
                 }
 
                 try {
                     console.log('Cache -> ', Cache)
                     await command.run(this._channel, this._args, this._prefix);
                 }  catch (e: unknown) {
-                    if (e instanceof DecayError) return this._channel.reply(e.message);
+
+                    if (e instanceof DecayError) {
+                        this._channel.reply(e.message);
+                        return 
+                    }
+                    
                     console.log(`<MessagaCreate> | [Command - ${command.name}] -> `)
                     console.log(e)
-                    return this._channel.reply('Ocorreu um erro interno.');
+                    this._channel.reply('Ocorreu um erro interno.');
                 }
             }
         }
