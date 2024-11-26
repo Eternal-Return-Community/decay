@@ -3,7 +3,8 @@
   "type": "module",
   "scripts": {
     "test": "tsx --env-file=.env ./tests/auth.ts",
-    "start": "tsx --env-file=.env start.ts"
+    "start": "tsx --env-file=.env start.ts",
+    "migrate": "npx prisma migrate dev --name init"
   },
   "devDependencies": {
     "@types/steam-user": "^5.0.3",

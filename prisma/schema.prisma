@@ -15,7 +15,7 @@ model Championship {
 model Teams {
   id       Int    @id @default(autoincrement())
   userName String @unique
-  userNum  Int @unique
+  userNum  Int? @unique
   mmr      Int @default(0)
   championship   Championship   @relation(fields: [teamId], references: [id])
   teamId Int

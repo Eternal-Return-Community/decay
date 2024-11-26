@@ -9,7 +9,6 @@ export default class Championship {
                 teams: {
                     create: {
                         userName: player.userName,
-                        userNum: player.userNum,
                     }
                 }
             }
@@ -25,16 +24,23 @@ export default class Championship {
                 teams: {
                     create: {
                         userName: player.userName,
-                        userNum: player.userNum,
                     }
                 }
             }
         })
     }
 
+    public static async removerPlayer(userName: string): Promise<void> {
+        await client.teams.delete({
+            where: {
+                userName
+            }
+        })
+    }
+
     public static async update(player: Partial<iPlayer>): Promise<void> {
         const userNameExist = await client.teams.findUnique({
-            where: { userName: player.userName }
+            where: { userName: player.userName! }
         })
 
         const data = userNameExist ? { mmr: player.mmr } : {
@@ -42,7 +48,7 @@ export default class Championship {
             mmr: player.mmr
         }
 
-        await client.teams.update({ where: { userNum: player.userNum }, data })
+        await client.teams.update({ where: { userNum: player.userNum! }, data })
     }
 
     public static async all(): Promise<Array<iPlayer>> {
@@ -64,11 +70,21 @@ export default class Championship {
         await client.championship.deleteMany();
     }
 
+    public static async deleteTeamId(teamId: number): Promise<void> {
+        await client.championship.delete({
+            where: {
+                id: teamId
+            }
+        })
+    }
+
     public static async deleteTeam(teamId: number): Promise<void> {
         await client.teams.deleteMany({
             where: {
                 teamId
             }
         });
+
+        await this.deleteTeamId(teamId)
     }
 }

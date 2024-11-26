@@ -9,7 +9,7 @@ class ERBSChampionShip extends AsciiTable3 {
         super(title)
     }
 
-    public async teams(): Promise<Array<string[][]>> {
+    private async teams(): Promise<Array<string[][]>> {
 
         const rows: Array<string[][]> = [];
 

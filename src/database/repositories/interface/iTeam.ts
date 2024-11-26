@@ -1,5 +1,5 @@
 export default interface iTeam {
     userName: string,
-    userNum: number,
+    userNum: number | null,
     mmr?: number
 }
