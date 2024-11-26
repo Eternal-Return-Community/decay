@@ -8,7 +8,10 @@ export default {
     description: 'Comando para mostrar quantos dias de inatividade a conta ainda tem.',
     alias: ['d'],
     args: ['username'],
-    enable: true,
+    status: {
+        enable: true,
+        reason: 'Correção de bug.'
+    },
     async run(channel: Message, args: Array<string>, prefix: string): Promise<Message> {
         try {
 

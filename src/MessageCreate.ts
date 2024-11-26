@@ -11,8 +11,13 @@ interface Default {
     description: string;
     alias: Array<string>;
     args: Array<string>;
-    enable: boolean
+    status: iStatus
     run(channel: Message, args: Array<string>, prefix: string): void
+}
+
+interface iStatus {
+    enable: boolean;
+    reason: string
 }
 
 export default class MessageCreate {
@@ -49,8 +54,8 @@ export default class MessageCreate {
                 if (!command) continue;
                 if (!this.validateCommand(command)) continue;
 
-                if (!command?.enable) {
-                    return this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente.` })
+                if (!command?.status?.enable) {
+                    return this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente. \nMotivo: ${command.status.reason}` })
                 }
 
                 console.log('Cache -> ', Cache)

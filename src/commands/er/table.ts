@@ -7,7 +7,10 @@ export default {
     description: 'Verificar a tabela do SA',
     alias: ['b'],
     args: [],
-    enable: true,
+    status: {
+        enable: true,
+        reason: 'Season acabou. O comando será reativado na próxima season.'
+    },
     async run(channel: Message): Promise<Message> {
         try {
             const teams = await ERBSChampionShip.show()

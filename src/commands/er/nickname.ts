@@ -7,7 +7,10 @@ export default {
     description: 'Verificar se um determinado nickname está disponível ou não.',
     alias: ['n'],
     args: ['username'],
-    enable: true,
+    status: {
+        enable: true,
+        reason: 'Correção de bug.'
+    },
     async run(channel: Message, args: Array<string>, prefix: string): Promise<Message> {
         try {
             const userName = args?.shift();
