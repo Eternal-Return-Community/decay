@@ -61,7 +61,7 @@ class Steam extends SteamUser {
     }
 
     private _relog(): void {
-        if (!this.steamID) setTimeout(async () => await this.login(), 10 * 1000)
+        if (!this.steamID) setTimeout(() => this.login(), 10 * 1000)
     }
 }
 
@@ -108,7 +108,4 @@ class ERBS {
     }
 }
 
-export default {
-    steam: new Steam(),
-    erbs: ERBS,
-}
+export default new Steam();

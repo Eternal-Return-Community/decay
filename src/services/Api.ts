@@ -41,7 +41,7 @@ export default class Api {
             if (data?.cod == 1006 || data?.msg === 'maintenance') throw new DecayError('**ERBS** entrou em manutenção.');
     
             if (data?.cod > 1000 && data?.cod <= 1110) {
-                await Auth.steam.refreshTicket()
+                await Auth.refreshTicket()
                 return await this.client(method, endpoint, body)
             }
     
@@ -65,7 +65,7 @@ export default class Api {
         Cache.season = season.id;
 
         if (season.seasonType == 2) {
-            throw new DecayError(`O ERBS tá em **Pre-season**. Durante a **Pre-season** \nSeason vai começar **<t:${seasonEnd}:R>**`)
+            throw new DecayError(`O ERBS tá em **Pre-season**. \nSeason vai começar **<t:${seasonEnd}:R>**`)
         }
 
         Cache.date = seasonEnd;
