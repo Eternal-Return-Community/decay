@@ -6,12 +6,12 @@ export default class Bot extends Client {
 
     constructor() {
         super({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
-        this.ready().message();
+        this.start()
     }
 
     private ready(): this {
-        return this.once('ready', async () => {
-            await Auth.steam.login();
+        return this.once('ready', () => {
+            Auth.steam.login();
             console.log('Bot online');
         });
     }
@@ -20,7 +20,8 @@ export default class Bot extends Client {
         this.on('messageCreate', (message) => new MessageCreate(message))
     }
 
-    public start(): void {
+    private start(): void {
+        this.ready().message();
         this.login(process.env.BOT_TOKEN);
     }
 }

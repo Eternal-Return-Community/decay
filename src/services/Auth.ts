@@ -1,6 +1,6 @@
 import SteamUser from 'steam-user';
 import Cache from '../Cache';
-import Api, { BASE_URL } from './Api';
+import Api from './Api';
 
 class Steam extends SteamUser {
 
@@ -28,9 +28,7 @@ class Steam extends SteamUser {
         })
     }
 
-    public async login(): Promise<void> {
-        await this.getToken();
-    }
+    public login = (): Promise<void> => this.getToken();
 
     private async getToken(): Promise<void> {
         return new Promise((resolve) => {

@@ -56,7 +56,7 @@ export default class MessageCreate {
                 if (!this.validateCommand(command)) continue;
 
                 if (!command?.status?.enable) {
-                    this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente. \nMotivo: ${command.status.reason}` })
+                    this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente. \n**Motivo**: ${command.status.reason}` })
                     return 
                 }
 
@@ -80,6 +80,6 @@ export default class MessageCreate {
     }
 
     private validateCommand = (command: Default): boolean =>
-        this._commandName.slice(this._prefix.length) === command.name ||
+        this._commandName.slice(this._prefix.length) === command.name?.toLowerCase() ||
         command.alias.includes(this._commandName.slice(this._prefix.length))
 }

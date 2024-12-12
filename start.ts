@@ -10,4 +10,4 @@ process.on("uncaughtException", (err, origin) => {
   console.log(origin)
 });
 
-new Bot().start()
+new Bot()

@@ -4,11 +4,11 @@ import ERBSChampionShip from "../../services/ERBSChampionShip";
 export default {
     name: 'Table',
     description: 'Verificar a tabela do SA',
-    alias: ['b'],
+    alias: ['t'],
     args: [],
     status: {
-        enable: true,
-        reason: 'Season acabou. O comando será reativado na próxima season.'
+        enable: false,
+        reason: 'As inscrições foram finalizadas. O comando será reativado na próxima season.'
     },
     async run(channel: Message): Promise<void> {
         const teams = await ERBSChampionShip.show()
