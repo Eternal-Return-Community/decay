@@ -57,22 +57,23 @@ export default class MessageCreate {
 
                 if (!command?.status?.enable) {
                     this._channel.reply({ content: `O comando **${command.name}** foi desativado temporariamente. \n**Motivo**: ${command.status.reason}` })
-                    return 
+                    return
                 }
 
                 try {
-                    console.log('Cache -> ', Cache)
                     await command.run(this._channel, this._args, this._prefix);
-                }  catch (e: unknown) {
+                } catch (e: unknown) {
 
                     if (e instanceof DecayError) {
                         this._channel.reply(e.message);
-                        return 
+                        return
                     }
-                    
+
                     console.log(`<MessagaCreate> | [Command - ${command.name}] -> `)
                     console.log(e)
                     this._channel.reply('Ocorreu um erro interno.');
+                } finally {
+                    console.log('Cache -> ', Cache)
                 }
             }
         }

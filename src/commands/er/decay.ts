@@ -5,7 +5,7 @@ import type iUserInfo from "../../interface/iUserInfo";
 export default {
     name: 'Decay',
     description: 'Comando para mostrar quantos dias de inatividade a conta ainda tem.',
-    alias: ['d'],
+    alias: ['d', 'b'],
     args: ['username'],
     status: {
         enable: true,

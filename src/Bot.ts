@@ -10,8 +10,8 @@ export default class Bot extends Client {
     }
 
     private ready(): this {
-        return this.once('ready', () => {
-            Auth.login();
+        return this.once('ready', async () => {
+            await Auth.STEAM.login();
             console.log('Bot online');
         });
     }

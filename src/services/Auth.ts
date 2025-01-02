@@ -28,9 +28,7 @@ class Steam extends SteamUser {
         })
     }
 
-    public login = (): Promise<void> => this.getToken();
-
-    private async getToken(): Promise<void> {
+    public async login(): Promise<void> {
         return new Promise((resolve) => {
             this.on('loggedOn', async () => {
                 await this
@@ -42,11 +40,8 @@ class Steam extends SteamUser {
     }
 
     public async refreshTicket(): Promise<void> {
-        const ticket = await this.cancelAuthSessionTickets(this._gameID, null)
-
-        if (ticket.canceledTicketCount > 0) {
-            await this.generateSessionTicket()
-        }
+        await this.cancelAuthSessionTickets(this._gameID, null)
+        await this.generateSessionTicket()
     }
 
     private async generateSessionTicket(): Promise<void> {
@@ -67,7 +62,7 @@ class Steam extends SteamUser {
 
 class ERBS {
     public static async auth(authorizationCode: string): Promise<void> {
-        await ERBS.getPatch();
+        await this.getPatch();
         const response = await Api.client('POST', '/users/authenticate', JSON.stringify({
             "dlc": "pt",
             "glc": "ko",
@@ -84,11 +79,7 @@ class ERBS {
     }
 
     private static renewalSession = (): void => {
-
-        if (Cache.renewalSession) {
-            return;
-        }
-
+        if (Cache.renewalSession) return;
         setInterval(() => Api.client('POST', '/external/renewalSession'), 1 * 30000)
         Cache.renewalSession = true;
     }
@@ -98,14 +89,17 @@ class ERBS {
         const data = await response.json();
 
         const patchNumber = String(data.meta.patch);
-        const numbers = patchNumber.split('');
 
-        const major = numbers.shift();
-        const patch = numbers.pop();
-        const minor = numbers.join('');
+        const major = patchNumber.substring(0, 1);
+        const minor = patchNumber.substring(1, 3);
+        const patch = patchNumber.substring(3, patchNumber.length);
 
+        console.log(`[ERBS - Patch] -> ${major}.${minor}.${patch}`)
         Cache.patch = `${major}.${minor}.${patch}`;
     }
 }
 
-export default new Steam();
+export default {
+    STEAM: new Steam(),
+    ERBS
+}

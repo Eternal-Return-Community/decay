@@ -6,8 +6,8 @@ import { Elo } from "../enum/Elo";
 import { MatchingTeamMode } from "../enum/MatchingTeamMode";
 import region from "../util/regions";
 import DecayError from "../exceptions/DecayError";
-import Auth from "./Auth";
 import type iLeaderBoard from "../interface/iLeaderBoard";
+import Auth from "./Auth";
 
 export enum BASE_URL {
     'BSER' = 'https://bser-rest-release.bser.io/api',
@@ -35,18 +35,24 @@ export default class Api {
                 },
                 body
             })
-    
+
             const data = await response.json();
-    
+
             if (data?.cod == 1006 || data?.msg === 'maintenance') throw new DecayError('**ERBS** entrou em manutenção.');
-    
-            if (data?.cod > 1000 && data?.cod <= 1110) {
-                await Auth.refreshTicket()
-                return await this.client(method, endpoint, body)
+            
+            if (data?.cod == 1007) {
+                await Auth.ERBS.getPatch()
+                throw new DecayError('Servidor voltou da manutenção agora. A versão do Patch demora 30 minutos para atualizar. Utilize o comando novamente em 30 minutos.')
             }
-    
+
+            if (data?.cod > 1000 && data?.cod <= 1110) {
+                await Auth.STEAM.refreshTicket()
+                await this.client(method, endpoint, body)
+                return;
+            }
+
             return this.data(data.cod, data)
-        } catch(e: any) {
+        } catch (e: any) {
             console.log('[API - Client] -> ', e?.message ?? e)
             throw e;
         }
@@ -57,6 +63,7 @@ export default class Api {
     }
 
     private async season(): Promise<number> {
+        
         const response: iSeason = await Api.client('GET', '/ranking/currentSeasonTiers');
 
         const season = response.rankingSeason;
